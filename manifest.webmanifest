@@ -1,0 +1,15 @@
+{
+  "background_color": "purple",
+  "description": "Cube timer for Rubik's cube speed solving",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "name": "Cube Timer",
+  "short_name": "cubetimer",
+  "start_url": "index.html"
+}

@@ -1,0 +1,84 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-size: 26px;
+}
+
+#megabox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
+  height: 100vh;
+}
+
+.megabox-column:nth-child(1) {
+  flex: 0;
+  text-align: right;
+  height: 100%;
+}
+
+.megabox-column:nth-child(2) {
+  flex: 1;
+}
+
+ol#zeitleiste {
+  margin: 0;
+  padding: 10px;
+  width: 140px;
+  overflow-y: auto;
+  overflow-x: none;
+  height: 100%;
+}
+
+#zeitleiste li {
+  list-style-type: none;
+}
+
+
+#timerbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+#timer {
+  font-size: 180px;
+}
+
+#rechtebox {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
+  height: 100%;
+}
+
+.rechtebox-row:nth-child(1) {
+  flex: 1;
+}
+
+.rechtebox-row:nth-child(2) {
+  flex: 0;
+}
+
+#unterebox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#durchschnittszeit, #bestzeit {
+  flex-shrink: 1;
+  padding: 10px;
+  width: 320px;
+}

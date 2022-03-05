@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cube Timer</title>
+  <meta name="description" content="Cube timer for timing solves for rubik's cubes">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/png" href="icon.png" />
+</head>
+<body>
+  <div id="megabox">
+
+    <div class="megabox-column">
+      <ol id="zeitleiste">
+        
+      </ol>
+    </div>
+
+    <div class="megabox-column">
+
+      <div id="rechtebox">
+
+        <div class="rechtebox-row">
+          <div id="timerbox">
+            <div id="timer">
+              00:00.00
+            </div>
+          </div>
+        </div>
+
+        <div class="rechtebox-row">
+
+          <div id="unterebox">
+
+            <div id="bestzeit">
+              <span>Bestzeit:</span> <span id="bestzeitzeit">-</span>
+            </div>
+
+            <div id="durchschnittszeit">
+              <span>Durchschnitt:</span> <span id="durchschnittszeitzeit">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="index.js"></script>
+</body>
+
+</html>
