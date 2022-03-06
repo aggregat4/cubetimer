@@ -21,7 +21,11 @@ updateAverageTime()
 updateBestTime()
 const yoohooAudio = new Audio('yoohooo.mp3')
 
-document.getElementById('timerbox').addEventListener('mousedown', (e) => {
+document.getElementById('timerbox').addEventListener('mousedown', onMouseDown)
+document.getElementById('timerbox').addEventListener('touchstart', onMouseDown)
+
+function onMouseDown(e) {
+  e.preventDefault()
   lastMouseDownTime = Date.now()
   if (timerRunning()) {
     // stop
@@ -43,9 +47,14 @@ document.getElementById('timerbox').addEventListener('mousedown', (e) => {
     userIsPressing = true
     document.getElementById('timer').style.color = 'red'
   }
-})
 
-document.getElementById('timerbox').addEventListener('mouseup', (e) => {
+}
+
+document.getElementById('timerbox').addEventListener('mouseup', onMouseUp)
+document.getElementById('timerbox').addEventListener('touchend', onMouseUp)
+
+function onMouseUp(e) {
+  e.preventDefault()
   userIsPressing = false
   document.getElementById('timer').style.color = 'black'
   if (!timerRunning() && lastMouseDownTime) {
@@ -55,7 +64,7 @@ document.getElementById('timerbox').addEventListener('mouseup', (e) => {
       timerStop = null  
     }
   } 
-})
+}
 
 function timerRunning() {
   return timerStart && !timerStop
