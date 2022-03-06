@@ -1,5 +1,7 @@
 let timerStart = null
 let timerStop = Date.now()
+let lastMouseDownTime = null
+let userIsPressing = false
 /*
 Array of:
 {
@@ -7,15 +9,18 @@ Array of:
   end: <time>
 }
 */
-const zeiten = []
+const savedZeiten = window.localStorage.getItem('cubezeiten')
+const zeiten = JSON.parse(savedZeiten) || []
+// We did not draw the entire list in the beginning, so as soon as we started
+// saving our times we were loading them but not drawing them. On the stop event 
+// we _only_ add a new time. So we make sure we draw everything at least once
+// Bugfix by Thomas
+drawZeitleiste()
 let bestTime = calcBestTiming()
 
-document.getElementById('timerbox').addEventListener('click', (e) => {
-  if (!timerRunning()) {
-    // start
-    timerStart = Date.now()
-    timerStop = null
-  } else {
+document.getElementById('timerbox').addEventListener('mousedown', (e) => {
+  lastMouseDownTime = Date.now()
+  if (timerRunning()) {
     // stop
     timerStop = Date.now()
     // We need to make sure that the timer displays the actual time that we are saving.
@@ -30,14 +35,34 @@ document.getElementById('timerbox').addEventListener('click', (e) => {
     updateList()
     updateBestTime()
     updateAverageTime()
+    saveTimings()
+  } else {
+    userIsPressing = true
+    document.getElementById('timer').style.color = 'red'
   }
 })
+
+document.getElementById('timerbox').addEventListener('mouseup', (e) => {
+  userIsPressing = false
+  document.getElementById('timer').style.color = 'black'
+  if (!timerRunning() && lastMouseDownTime) {
+    // start
+    if (Date.now() - lastMouseDownTime > 1 * 1000) {
+      timerStart = Date.now()
+      timerStop = null  
+    }
+  } 
+})
+
 
 function timerRunning() {
   return timerStart && !timerStop
 }
 
 function updateTimer() {
+  if (userIsPressing && Date.now() - lastMouseDownTime > 1 * 1000) {
+    document.getElementById('timer').style.color = 'green'
+  }
   if (timerRunning()) {    
     drawTimer()
   }
@@ -58,10 +83,22 @@ function formatTime(timerTimeInMs) {
 function updateList() {
   if (zeiten.length > 0) {
     const lastTiming = zeiten[zeiten.length - 1]
-    const zeitleiste = document.getElementById('zeitleiste')
-    const neueZeit = document.createElement('li')
-    neueZeit.textContent = formatTime(lastTiming.end - lastTiming.begin)
-    zeitleiste.appendChild(neueZeit)
+    addToZeitleiste(lastTiming, true)
+  }
+}
+
+function drawZeitleiste() {
+  for (let i = 0; i < zeiten.length; i++) {
+    addToZeitleiste(zeiten[i], i == zeiten.length - 1 ? true : false)
+  }
+}
+
+function addToZeitleiste(timing, scrollIntoView) {
+  const zeitleiste = document.getElementById('zeitleiste')
+  const neueZeit = document.createElement('li')
+  neueZeit.textContent = formatTime(timing.end - timing.begin)
+  zeitleiste.appendChild(neueZeit)
+  if (scrollIntoView) {
     neueZeit.scrollIntoView()
   }
 }
@@ -86,7 +123,7 @@ function calcBestTiming() {
 function updateBestTime() {
   const newBestTime = calcBestTiming()
   if (newBestTime) {
-    if (timingInMs(newBestTime.begin, newBestTime.end) < timingInMs(bestTime.begin, bestTime.end)) {
+    if (bestTime && timingInMs(newBestTime.begin, newBestTime.end) < timingInMs(bestTime.begin, bestTime.end)) {
       // TODO: We have a new record! Do something
     }
     bestTime = newBestTime
@@ -108,6 +145,10 @@ function calcAverageTiming() {
 function updateAverageTime() {
   const newAverageTime = calcAverageTiming()
   document.getElementById('durchschnittszeitzeit').textContent = formatTime(newAverageTime)
+}
+
+function saveTimings() {
+  window.localStorage.setItem('cubezeiten', JSON.stringify(zeiten))
 }
 
 window.requestAnimationFrame(updateTimer)
