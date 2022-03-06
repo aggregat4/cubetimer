@@ -2,6 +2,7 @@
   "background_color": "purple",
   "description": "Cube timer for Rubik's cube speed solving",
   "display": "fullscreen",
+  "orientation": "landscape",
   "icons": [
     {
       "src": "icon.png",
