@@ -17,6 +17,9 @@ const zeiten = JSON.parse(savedZeiten) || []
 // Bugfix by Thomas
 drawZeitleiste()
 let bestTime = calcBestTiming()
+updateAverageTime()
+updateBestTime()
+const yoohooAudio = new Audio('yoohooo.mp3')
 
 document.getElementById('timerbox').addEventListener('mousedown', (e) => {
   lastMouseDownTime = Date.now()
@@ -53,7 +56,6 @@ document.getElementById('timerbox').addEventListener('mouseup', (e) => {
     }
   } 
 })
-
 
 function timerRunning() {
   return timerStart && !timerStop
@@ -124,11 +126,24 @@ function updateBestTime() {
   const newBestTime = calcBestTiming()
   if (newBestTime) {
     if (bestTime && timingInMs(newBestTime.begin, newBestTime.end) < timingInMs(bestTime.begin, bestTime.end)) {
-      // TODO: We have a new record! Do something
+      showSparkles()
+      yoohooAudio.play().catch(reason => {
+        console.log(`Can't play audio: `, reason)
+      })
     }
     bestTime = newBestTime
     document.getElementById('bestzeitzeit').textContent = formatTime(newBestTime.end - newBestTime.begin)
   }
+}
+
+function showSparkles() {
+  const sparkles = document.getElementById('sparkles')
+  sparkles.innerHTML = '🤩'
+  sparkles.classList.toggle('explode')
+  setTimeout(() => {
+    sparkles.innerHTML = ''
+    sparkles.classList.toggle('explode')
+  }, 5000)
 }
 
 function calcAverageTiming() {
