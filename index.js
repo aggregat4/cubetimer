@@ -47,7 +47,6 @@ function onMouseDown(e) {
     userIsPressing = true
     document.getElementById('timer').style.color = 'red'
   }
-
 }
 
 document.getElementById('timerbox').addEventListener('mouseup', onMouseUp)
