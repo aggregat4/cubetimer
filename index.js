@@ -58,7 +58,7 @@ function onMouseUp(e) {
   document.getElementById('timer').style.color = 'black'
   if (!timerRunning() && lastMouseDownTime) {
     // start
-    if (Date.now() - lastMouseDownTime > 1 * 1000) {
+    if (canTimerStart()) {
       timerStart = Date.now()
       timerStop = null  
     }
@@ -70,13 +70,17 @@ function timerRunning() {
 }
 
 function updateTimer() {
-  if (userIsPressing && Date.now() - lastMouseDownTime > 1 * 1000) {
+  if (userIsPressing && canTimerStart()) {
     document.getElementById('timer').style.color = 'green'
   }
   if (timerRunning()) {    
     drawTimer()
   }
   window.requestAnimationFrame(updateTimer)
+}
+
+function canTimerStart() {
+  return Date.now() - lastMouseDownTime > 1 * 750
 }
 
 function drawTimer() {
