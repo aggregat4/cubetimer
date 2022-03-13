@@ -101,12 +101,12 @@ function updateTimer() {
         // don't start editing again when we are already editing
         && ! lastZeitleistePointerDownTarget.parentElement.classList.contains('timingEditMode')) {
       const deleteButton = document.createElement('button')
-      deleteButton.classList.toggle('deleteTiming')
+      deleteButton.classList.add('deleteTiming')
       deleteButton.textContent = '🗑'
       deleteButton.addEventListener('click', onDeleteTiming(id))
       const cancelDeleteButton = document.createElement('button')
-      cancelDeleteButton.classList.toggle('cancelDeleteTiming')
-      cancelDeleteButton.textContent = '×'
+      cancelDeleteButton.classList.add('cancelDeleteTiming')
+      cancelDeleteButton.textContent = '✓'
       cancelDeleteButton.addEventListener('click', onCancelDeleteTiming(id))
       lastZeitleistePointerDownTarget.parentElement.appendChild(deleteButton)
       lastZeitleistePointerDownTarget.parentElement.appendChild(cancelDeleteButton)
