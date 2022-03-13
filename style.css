@@ -51,8 +51,9 @@ ol#zeitleiste {
 }
 
 #timer {
-  font-size: 17vw;
+  font-size: 15vw;
   font-family: monospace;
+  user-select: none;
 }
 
 #rechtebox {
@@ -90,6 +91,7 @@ ol#zeitleiste {
   position: fixed;
   left: 300px;
   top: 300px;
+  user-select: none;
 }
 
 .explode {
