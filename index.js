@@ -1,6 +1,8 @@
 let timerStart = null
 let timerStop = Date.now()
 let lastMouseDownTime = null
+let lastZeitleistePointerDown = null
+let lastZeitleistePointerDownTarget = null
 let userIsPressing = false
 /*
 Array of:
@@ -10,7 +12,7 @@ Array of:
 }
 */
 const savedZeiten = window.localStorage.getItem('cubezeiten')
-const zeiten = JSON.parse(savedZeiten) || []
+let zeiten = JSON.parse(savedZeiten) || []
 // We did not draw the entire list in the beginning, so as soon as we started
 // saving our times we were loading them but not drawing them. On the stop event 
 // we _only_ add a new time. So we make sure we draw everything at least once
@@ -21,8 +23,8 @@ updateAverageTime()
 updateBestTime()
 const yoohooAudio = new Audio('yoohooo.mp3')
 
-document.getElementById('timerbox').addEventListener('mousedown', onMouseDown)
-document.getElementById('timerbox').addEventListener('touchstart', onMouseDown)
+document.getElementById('timerbox').addEventListener('pointerdown', onMouseDown)
+// document.getElementById('timerbox').addEventListener('touchstart', onMouseDown)
 
 function onMouseDown(e) {
   e.preventDefault()
@@ -49,8 +51,8 @@ function onMouseDown(e) {
   }
 }
 
-document.getElementById('timerbox').addEventListener('mouseup', onMouseUp)
-document.getElementById('timerbox').addEventListener('touchend', onMouseUp)
+document.getElementById('timerbox').addEventListener('pointerup', onMouseUp)
+// document.getElementById('timerbox').addEventListener('touchend', onMouseUp)
 
 function onMouseUp(e) {
   e.preventDefault()
@@ -65,6 +67,21 @@ function onMouseUp(e) {
   } 
 }
 
+document.getElementById('zeitleiste').addEventListener('pointerdown', onPointerDownZeitleiste)
+document.getElementById('zeitleiste').addEventListener('pointerup', onPointerUpZeitleiste)
+
+function onPointerDownZeitleiste(e) {
+  e.preventDefault()
+  lastZeitleistePointerDown = Date.now()
+  lastZeitleistePointerDownTarget = e.target
+}
+
+function onPointerUpZeitleiste(e) {
+  e.preventDefault()
+  lastZeitleistePointerDown = null
+  lastZeitleistePointerDownTarget = null
+}
+
 function timerRunning() {
   return timerStart && !timerStop
 }
@@ -76,7 +93,50 @@ function updateTimer() {
   if (timerRunning()) {    
     drawTimer()
   }
+  if (lastZeitleistePointerDown && lastZeitleistePointerDownTarget && Date.now() - lastZeitleistePointerDown > 500) {
+    const id = lastZeitleistePointerDownTarget.getAttribute('id')
+    if (lastZeitleistePointerDownTarget.tagName == 'SPAN'
+        // only allow removing timings that are 5 minutes young
+        && Date.now() - new Date(parseInt(id)) < (5 * 60 * 1000)
+        // don't start editing again when we are already editing
+        && ! lastZeitleistePointerDownTarget.parentElement.classList.contains('timingEditMode')) {
+      const deleteButton = document.createElement('button')
+      deleteButton.classList.toggle('deleteTiming')
+      deleteButton.textContent = '🗑'
+      deleteButton.addEventListener('click', onDeleteTiming(id))
+      const cancelDeleteButton = document.createElement('button')
+      cancelDeleteButton.classList.toggle('cancelDeleteTiming')
+      cancelDeleteButton.textContent = '×'
+      cancelDeleteButton.addEventListener('click', onCancelDeleteTiming(id))
+      lastZeitleistePointerDownTarget.parentElement.appendChild(deleteButton)
+      lastZeitleistePointerDownTarget.parentElement.appendChild(cancelDeleteButton)
+      lastZeitleistePointerDownTarget.parentElement.classList.add('timingEditMode')
+    }
+    lastZeitleistePointerDown = null
+    lastZeitleistePointerDownTarget = null
+  }
   window.requestAnimationFrame(updateTimer)
+}
+
+function onDeleteTiming(timingId) {
+  return function() {
+    const timingSpan = document.getElementById(`${timingId}`)
+    const timingLi = timingSpan.parentElement
+    timingLi.remove()
+    zeiten = zeiten.filter(zeit => zeit.begin !== parseInt(timingId))
+    updateBestTime()
+    updateAverageTime()
+    saveTimings()
+  } 
+}
+
+function onCancelDeleteTiming(timingId) {
+  return function() {
+    const timingSpan = document.getElementById(`${timingId}`)
+    const timingLi = timingSpan.parentElement
+    timingLi.querySelectorAll('button').forEach(btn => btn.remove())
+    timingLi.classList.remove('timingEditMode')
+  }
 }
 
 function canTimerStart() {
@@ -110,7 +170,11 @@ function drawZeitleiste() {
 function addToZeitleiste(timing, scrollIntoView) {
   const zeitleiste = document.getElementById('zeitleiste')
   const neueZeit = document.createElement('li')
-  neueZeit.textContent = formatTime(timing.end - timing.begin)
+  const timingContent = document.createElement('span')
+  timingContent.setAttribute('id', `${timing.begin}`)
+  timingContent.classList.toggle('timingTime')
+  timingContent.textContent = formatTime(timing.end - timing.begin)
+  neueZeit.appendChild(timingContent)
   zeitleiste.appendChild(neueZeit)
   if (scrollIntoView) {
     neueZeit.scrollIntoView()
@@ -145,6 +209,8 @@ function updateBestTime() {
     }
     bestTime = newBestTime
     document.getElementById('bestzeitzeit').textContent = formatTime(newBestTime.end - newBestTime.begin)
+  } else {
+    document.getElementById('bestzeitzeit').textContent = '-'
   }
 }
 

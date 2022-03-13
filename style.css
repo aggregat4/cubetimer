@@ -40,6 +40,7 @@ ol#zeitleiste {
 
 #zeitleiste li {
   list-style-type: none;
+  padding: 2px;
 }
 
 
@@ -96,4 +97,17 @@ ol#zeitleiste {
 
 .explode {
   transform: scale(20);
+}
+
+.timingEditMode {
+  background-color: lightgoldenrodyellow;
+}
+
+.timingTime {
+  display: block;
+}
+
+.timingEditMode button {
+  height: 100%;
+  width: 40px;
 }
